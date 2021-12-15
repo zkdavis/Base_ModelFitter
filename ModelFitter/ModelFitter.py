@@ -412,13 +412,18 @@ class Fitter:
         if (np.abs(gfactor) > np.abs(diff / 10)):
             gfactor = (gfactor / np.abs(gfactor)) * diff / 10
         a = args[k] - gfactor
+        #todo make add_min param
+        add_min = 1e-4
+        if(self.dataform[k].min != 0):
+            add_min = self.dataform[k].min /100
         if (a <= self.dataform[k].min):
-            a = self.dataform[k].min
+
+            a = self.dataform[k].min + add_min
             if(self.dataform[self.cur_par].lrate<1e-3):
                 self.dataform[self.cur_par].lrate = self.dataform[self.cur_par].lrate * 0.5
                 print("barrier slowed")
         elif (a >= self.dataform[k].max):
-            a = self.dataform[k].max
+            a = self.dataform[k].max - add_min
             if (self.dataform[self.cur_par].lrate < 1e-3):
                 self.dataform[self.cur_par].lrate = self.dataform[self.cur_par].lrate * 0.5
                 print("barrier slowed")

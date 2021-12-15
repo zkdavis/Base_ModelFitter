@@ -50,7 +50,8 @@ def run():
     pl = PL.Plotter()
     fr = pl.Plot([ds],xscale="linear",yscale="linear")
     #feed fitter
-    mf = MF.Fitter(func=getxandy,ds=getcompare(),figret=fr,fargs=fargt,grad=True,show_error=True,manual_mode=False)
+    mf = MF.Fitter(func=getxandy,ds=getcompare(),figret=fr,fargs=fargt,grad=False,show_error=True,manual_mode=False)
+    mf.par_opt_len = 7
     mf.maxinter = 400
     mf.random_search=True
     mf.run()
