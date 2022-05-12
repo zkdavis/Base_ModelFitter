@@ -14,7 +14,7 @@ def sinwave(a,w,phi):
 def getcompare():
     a=0.7
     w=1.5
-    phi=0.1
+    phi=0.9
     f = sinwave(a,w,phi)
     ds = dataset()
     ds.x=x
