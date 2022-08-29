@@ -28,33 +28,54 @@ class explorerPlot:
         self.plot_y_bound=None
         self.line_x_scale='linear'
         self.line_y_scale='linear'
+        self.maxy =None
+        self.miny = None
         self.update_bounds = True
         self.slider_width = 0.2
+        self.datasetind=0
+        self.dataset=[]
 
 
     def buildPlot(self):
         input_data = []
         for id in self.dataranges:
            input_data.append(id.data)
-        ds = dataset()
-        ds.x = self.xlin
-        ds.y = self.update_functions(*input_data)
-        ds.plot_type = ds.plottype
         # create plot
         pl = PL.Plotter.Plotter()
+        ret = self.update_functions(*input_data)
+        try:
+            len(ret)
+        except:
+            ret = np.array(ret)
+        for i in range(len(ret)):
+            ds = dataset()
+            ds.x = self.xlin
+            ds.y = ret[i]
+            ds.plot_type = ds.plottype
+            self.dataset.append(ds)
+            if(self.maxy is None):
+                self.maxy = max(ds.y)
+            elif(self.maxy <max(ds.y)):
+                self.maxy  = ds.y
+            if (self.miny  is None):
+                self.miny  = min(ds.y)
+            elif (self.miny  > min(ds.y)):
+                self.miny  = ds.y
+
         if(self.plot_y_bound==None):
-            ymax=1.2*max(ds.y)
-            ymin=0.8*min(ds.y)
+            ymax=1.2*self.maxy
+            ymin=0.8*self.miny
         else:
             ymax=self.plot_y_bound[0]
             ymin = self.plot_y_bound[1]
         if (self.plot_x_bound == None):
-            xmax =max(ds.x)
-            xmin = min(ds.x)
+            xmax =max(self.xlin)
+            xmin = min(self.xlin)
         else:
             xmax = self.plot_x_bound[0]
             xmin = self.plot_x_bound[1]
-        fr = pl.Plot([ds], xscale=self.line_x_scale, yscale=self.line_y_scale,maxy=ymax,miny=ymin,minx=xmin,maxx=xmax)
+
+        fr = pl.Plot(self.dataset, xscale=self.line_x_scale, yscale=self.line_y_scale,maxy=ymax,miny=ymin,minx=xmin,maxx=xmax)
         self.figret = fr
         self.buildSliders()
 
@@ -87,12 +108,40 @@ class explorerPlot:
         yval = None
         for s in self.slider_array:
             input_data.append(s.val)
-        yval = self.update_functions(*input_data)
-        if(self.plot_y_bound==None and self.plot_x_bound == None and self.update_bounds):
-            ymax = 1.2 * max(yval)
-            ymin = 0.8 * min(yval)
-            self.updateBounds(maxy=ymax,miny=ymin)
-        self.figret.plots[0][0].set_ydata(yval)
+        ret = self.update_functions(*input_data)
+        try:
+            len(ret)
+        except:
+            ret = np.array(ret)
+        j = None
+        for i in range(len(ret)):
+            ds = dataset()
+            ds.x = self.xlin
+            ds.y = ret[i]
+            ds.plot_type = ds.plottype
+            self.dataset.append(ds)
+            # if (self.maxy is None):
+            #     self.maxy = max(ds.y)
+            # elif (self.maxy < max(ds.y)):
+            #     self.maxy = ds.y
+            # if (self.miny is None):
+            #     self.miny = min(ds.y)
+            # elif (self.miny > min(ds.y)):
+            #     self.miny = ds.y
+            #[0][0] first line
+            if(j is None):
+                j=i
+            else:
+                j+=1
+            while (type(self.figret.plots[j]) is not list):
+                j += 1
+            self.figret.plots[j][0].set_ydata(ret[i])
+
+        # if(self.plot_y_bound==None and self.plot_x_bound == None and self.update_bounds):
+        #     ymax = 1.2 * self.maxy
+        #     ymin = 0.8 * self.miny
+        #     self.updateBounds(maxy=ymax,miny=ymin)
+
         self.figret.fig.canvas.draw_idle()
 
     def reset(self,event):
