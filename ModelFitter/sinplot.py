@@ -19,7 +19,7 @@ def run():
     fargs = [a,w,phi]
     ep = PE.explorerPlot(sinwave,x,fargs)
     ds = PL.dataset()
-    xx  =  np.linspace(0,100)
+    xx  = x
     ds.x =xx
     ds.y = xx
     ds.plot_type = ds.scattertype

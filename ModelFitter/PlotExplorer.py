@@ -43,6 +43,9 @@ class explorerPlot:
         # create plot
         pl = PL.Plotter.Plotter()
         ret = self.update_functions(*input_data)
+        if (self.xlin is None):
+            self.xlin = ret[0]
+            ret = [ret[1]]
         try:
             len(ret)
         except:
@@ -105,10 +108,20 @@ class explorerPlot:
 
     def update(self,val):
         input_data = []
+        self.dataset = []
         yval = None
         for s in self.slider_array:
             input_data.append(s.val)
         ret = self.update_functions(*input_data)
+        try:
+            len(ret)
+            if(len(ret)>1):
+                if (self.xlin is None or len(ret[0]) == len(ret[1])):
+                    self.xlin = ret[0]
+                    ret = [ret[1]]
+        except:
+            None
+
         try:
             len(ret)
         except:
@@ -135,7 +148,8 @@ class explorerPlot:
                 j+=1
             while (type(self.figret.plots[j]) is not list):
                 j += 1
-            self.figret.plots[j][0].set_ydata(ret[i])
+            # self.figret.plots[j][0].set_ydata(ret[i])
+            self.figret.plots[j][0].set_data(self.xlin,ret[i])
 
         # if(self.plot_y_bound==None and self.plot_x_bound == None and self.update_bounds):
         #     ymax = 1.2 * self.maxy
