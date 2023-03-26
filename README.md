@@ -1,6 +1,10 @@
 # Base_ModelFitter
  
-# Description
+# Installation:
+...
+
+...
+# Description:
 A modified gradient descent fitting alrgorithm. Designed with large data spaces in mind and can be manually interacted with while fitting. 
 # Dependencies:
 * Easier_Plot_Lib
